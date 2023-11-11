@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nni
+spec:
+  selector:
+    matchLabels:
+      app: nni
+  template:
+    metadata:
+      labels:
+        app: nni
+    spec:
+      containers:
+      - name: nni
+        image: pepperide/nni:v2.10.1-example
+        ports:
+        - name: http
+          containerPort: 8080
+        command: ["/bin/bash","-c","nnictl create -f --config nni/examples/trials/mnist-pytorch/config.yml"]

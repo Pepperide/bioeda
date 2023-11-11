@@ -1,0 +1,23 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vscode-python
+spec:
+  selector:
+    matchLabels:
+      app: vscode-python
+  template:
+    metadata:
+      labels:
+        app: vscode-python
+    spec:
+      containers:
+      - name: vscode-python
+        image: pepperide/vscode-python
+        env:
+        - name: TEST_LISTEN_PORT
+          value: "8080"
+        ports:
+        - name: http
+          containerPort: 8080
