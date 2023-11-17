@@ -1,3 +1,15 @@
 {
-	"prova" :"funziona?"
+    "userID": "user001",
+    "jobName": "myjob",
+    "sbatch": {
+        "output": "/test.json",
+        "cpus": 1,
+        "nodes": 1
+    },
+    "scripts": [
+        {
+            "name": "pythonscript.py",
+            "command": "python3"
+        }
+    ]
 }

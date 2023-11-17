@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/Pepepride/bioda/operators/cmd/slurm-controller;proto";
+option go_package = "github.com/Pepperide/bioeda/operators/cmd/slurm-controller;proto";
 
 message JsonRequest {
   string filename = 1;

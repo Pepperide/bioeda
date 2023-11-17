@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -20,19 +22,97 @@ type JobsServer struct {
 	pb.UnimplementedJobsServer
 }
 
+type SBatchOpt struct {
+	Output string
+	Cpus   int
+	Nodes  int
+}
+
+type Script struct {
+	Name    string
+	Command string
+}
+
+type Job struct {
+	UserID  string
+	JobName string
+	Sbatch  SBatchOpt
+	Scripts []Script
+}
+
 func (s *JobsServer) Submit(ctx context.Context, json_req *pb.JsonRequest) (*pb.SubmitResponse, error) {
-	// Business logic
+
+	/* --- LOGIC --- */
 	log.Println("Submitting...")
-	filename := filepath.Join("/home/control", json_req.Filename)
-	err := os.WriteFile(filename, json_req.Json, 0600)
-	if err != nil {
-		log.Fatalf("Could not Write file: %v", err)
-	}
+
+	job := jsonParser(json_req.Json)
+
+	ok := makeScript(job)
+
 	response := &pb.SubmitResponse{
-		Ok: err == nil,
+		Ok: ok,
 	}
 
 	return response, nil
+}
+
+func jsonParser(chunks []byte) Job {
+	jobString := string(chunks[:])
+	fmt.Println(jobString)
+
+	var job Job
+	err := json.Unmarshal([]byte(jobString), &job)
+	if err != nil {
+		log.Printf("Error: %v", err)
+	}
+
+	return job
+}
+
+func makeScript(job Job) bool {
+	sbatchOpt := job.Sbatch
+
+	path := filepath.Join("/home", "control", job.UserID)
+
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		return false
+	}
+
+	file, err := os.Create(filepath.Join(path, job.JobName+".sh"))
+	if err != nil {
+		log.Printf("Error: %v", err)
+		return false
+	}
+
+	// File header
+	str := "#!/bin/bash"
+
+	// Options
+	if sbatchOpt.Cpus != 0 {
+		str += "\n#SBATCH --cpus-per-task=" + fmt.Sprintf("%d", sbatchOpt.Cpus)
+	}
+	if sbatchOpt.Nodes != 0 {
+		str += "\n#SBATCH --nodes=" + fmt.Sprintf("%d", sbatchOpt.Nodes)
+	}
+	if sbatchOpt.Output != "" {
+		str += "\n#SBATCH --output=" + sbatchOpt.Output
+	}
+
+	// Script
+	for _, value := range job.Scripts {
+		str += "\n" + value.Command + value.Name
+	}
+
+	// Write file
+	_, err = file.Write([]byte(str))
+	if err != nil {
+		log.Printf("Could not Write file: %v", err)
+		return false
+	}
+
+	return true
 }
 
 func main() {
