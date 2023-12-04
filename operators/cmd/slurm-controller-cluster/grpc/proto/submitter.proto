@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "github.com/Pepperide/bioeda/operators/cmd/slurm-controller-cluster/grpc;proto";
+
+message ScriptRequest {
+  string filename = 1;
+  bytes script_chunks = 2;
+}
+
+message SubmitResponse {
+  bool ok = 1;
+}
+
+service Jobs{
+  rpc Submit(ScriptRequest) returns (SubmitResponse);
+}
