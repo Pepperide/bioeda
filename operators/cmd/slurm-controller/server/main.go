@@ -1,3 +1,5 @@
+/* --- SLURM CONTROLLER --- */
+
 package main
 
 import (
@@ -15,7 +17,8 @@ import (
 
 const (
 	// Port for gRPC server to listen to
-	PORT = ":50051"
+	PORT       = ":50051"
+	TMP_FOLDER = "/tmp"
 )
 
 type JobsServer struct {
@@ -43,10 +46,11 @@ type Job struct {
 func (s *JobsServer) Submit(ctx context.Context, json_req *pb.JsonRequest) (*pb.SubmitResponse, error) {
 
 	/* --- LOGIC --- */
-	log.Println("Submitting...")
 
+	// Parse the json script sent by the client
 	job := jsonParser(json_req.Json)
 
+	// Create the script and save it
 	ok := makeScript(job)
 
 	response := &pb.SubmitResponse{
@@ -72,8 +76,8 @@ func jsonParser(chunks []byte) Job {
 func makeScript(job Job) bool {
 	sbatchOpt := job.Sbatch
 
-	path := filepath.Join("/home", "control", job.UserID)
-
+	// Save the script for testing
+	path := filepath.Join("/home", "", job.UserID)
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		log.Printf("Error: %v", err)
