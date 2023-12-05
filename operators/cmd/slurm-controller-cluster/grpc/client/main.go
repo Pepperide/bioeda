@@ -12,9 +12,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	ADDRESS = "localhost:50051"
-)
+var domain string
+var address = domain + ":50051"
 
 func main() {
 	// Define flags
@@ -22,7 +21,7 @@ func main() {
 	// filename := flag.String("name", "defaultName", "Name of the output file")
 	flag.Parse()
 
-	conn, err := grpc.Dial(ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
 		log.Fatalf("did not connect : %v", err)

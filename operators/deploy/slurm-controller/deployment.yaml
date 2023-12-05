@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slurm-controller-app
+spec:
+  selector:
+    matchLabels:
+      app: slurm-controller-app
+  template:
+    metadata:
+      labels:
+        app: slurm-controller-app
+    spec:
+      containers:
+        - name: slurm-controller
+          image: pepperide/slurm-controller:client-test
+          ports:
+            - name: http
+              containerPort: 8080
+          command: ["/bin/sh", "-c", "--"]
+          args: ["while true; do sleep 30; done;"]
