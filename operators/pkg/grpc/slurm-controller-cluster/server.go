@@ -24,6 +24,8 @@ func SubmitImpl(filename string, chunks []byte) bool {
 	if err != nil {
 		log.Printf("%v", err)
 		ok = false
+	} else {
+		log.Printf("Job started")
 	}
 
 	return ok

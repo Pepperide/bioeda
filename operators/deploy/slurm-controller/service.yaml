@@ -7,7 +7,6 @@ spec:
     app: slurm-controller-app
   ports:
     - protocol: TCP
-      port: 5001
+      port: 5000
       targetPort: 8080 #Container port
-      nodePort: 30007
-  type: NodePort
+  type: ClusterIP

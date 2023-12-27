@@ -21,8 +21,10 @@ const (
 
 func (s *JobsServer) Submit(ctx context.Context, req *pb.ScriptRequest) (*pb.SubmitResponse, error) {
 	/* --- LOGIC --- */
+	log.Printf("Message received: %v", req.Filename)
 	ok := logic.SubmitImpl(req.Filename, req.ScriptChunks)
 
+	log.Printf("Submittin response: %v", req.Filename)
 	response := &pb.SubmitResponse{
 		Ok: ok,
 	}

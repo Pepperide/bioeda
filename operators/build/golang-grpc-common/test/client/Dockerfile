@@ -31,5 +31,5 @@ COPY --from=builder /tmp/builder/test/sbatch/test_script.sh /usr/bin/test_script
 
 RUN ln -s /usr/bin/client /usr/bin/bioeda-component
 
-ENTRYPOINT [ "/usr/bin/bioeda-component", "-f", "/usr/bin/test_script.sh" ]
+# ENTRYPOINT [ "/usr/bin/bioeda-component", "-f", "/usr/bin/test_script.sh" ]
 # ENTRYPOINT [ "/usr/bin/bioeda-component"]

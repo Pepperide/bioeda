@@ -13,9 +13,8 @@ spec:
     spec:
       containers:
         - name: slurm-controller
-          image: pepperide/slurm-controller:client-test
+          image: pepperide/slurm-controller:test-01
           ports:
             - name: http
               containerPort: 8080
-          command: ["/bin/sh", "-c", "--"]
-          args: ["while true; do sleep 30; done;"]
+          command: ["/bin/sleep", "infinity"]

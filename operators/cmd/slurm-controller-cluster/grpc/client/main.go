@@ -7,24 +7,33 @@ import (
 	"time"
 
 	pb "github.com/Pepperide/bioeda/operators/cmd/slurm-controller-cluster/grpc/proto"
+	common "github.com/Pepperide/bioeda/operators/pkg/common"
 	logic "github.com/Pepperide/bioeda/operators/pkg/grpc/slurm-controller-cluster"
 
 	"google.golang.org/grpc"
 )
 
-var domain string
+var domain = "localhost"
 var address = domain + ":50051"
 
 func main() {
 	// Define flags
-	filepath := flag.String("filepath", "", "path to the file")
+	var filepath string
+	flag.StringVar(&filepath, "f", "", "path to the file")
 	// filename := flag.String("name", "defaultName", "Name of the output file")
 	flag.Parse()
+	log.Printf("File: %v", filepath)
+	found := common.IsFlagPassed("f")
+	if !found {
+		log.Printf("Error: the file path is not set")
+		return
+	}
 
+	log.Printf("Try to connect %v", address)
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-
 	if err != nil {
-		log.Fatalf("did not connect : %v", err)
+		log.Printf("Did not connect : %v", err)
+		return
 	}
 
 	defer conn.Close()
@@ -35,7 +44,7 @@ func main() {
 
 	defer cancel()
 
-	err = logic.SendMessage(c, ctx, *filepath)
+	err = logic.SendMessage(c, ctx, filepath)
 	if err != nil {
 		log.Printf("%v", err)
 		return
